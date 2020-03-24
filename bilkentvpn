@@ -1,0 +1,28 @@
+#!/bin/bash
+
+if [[ $(systemctl status openvpn-client@bilkent-client | grep inactive) ]]; then
+	printf "Connecting to Bilkent-VPN\n"
+
+	sudo systemctl start openvpn-client@bilkent-client
+
+	printf "Waiting for tun0 interface\n"
+	while [[ $(ifconfig | grep tun0 | head -c1 | wc -c) -eq 0 ]]; do
+		sleep 1
+		printf "."
+	done
+	printf " Done\n"
+
+	printf "Routing the traffic..."
+
+	sudo ip route add default dev tun0
+	sudo ip route add 192.168.1.0/24 dev enp2s0
+
+	printf " Done\n"
+	printf "Connected successfully\n"
+else
+	printf "Disconnecting from Bilkent-VPN\n"
+
+	sudo systemctl stop openvpn-client@bilkent-client
+
+	printf "Disconnected successfully\n"
+fi

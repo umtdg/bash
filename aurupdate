@@ -1,0 +1,15 @@
+#!/bin/bash
+
+for package in $(ls -lA --format=single-column) 
+do
+	printf "\e[1;34m%-6s\e[m\n" "$package:"
+	cd $package;
+	git pull | grep 'Already up to date.' &> /dev/null
+	if [ $? == 0 ]; then
+		printf "Already up to date.";
+	else
+		makepkg -si;
+	fi
+	cd ..;
+	printf "\n\n";
+done

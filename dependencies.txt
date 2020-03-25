@@ -1,0 +1,22 @@
+archlinux:
+
+aurupdate:
+	git
+
+bilkentvpn:
+	openvpn
+	bilkent.conf at openvpn client configs (\w dev enp2s0)
+	net-tools
+	iproute2
+
+pagecount:
+	exiftool
+
+screencast:
+	ffmpeg
+	xrectsel
+	alsa or pulse
+
+test-mic:
+	alsa-utils
+

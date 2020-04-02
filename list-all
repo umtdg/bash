@@ -1,0 +1,3 @@
+#!/bin/bash
+
+ls -lA --color=auto --format=single-column $1

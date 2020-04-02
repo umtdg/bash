@@ -1,0 +1,21 @@
+#!/bin/bash
+
+cmd=(find . -maxdepth 1 -not -path .)
+
+for arg in "$@"
+do
+	case $arg in
+		all | "") ;;
+		dir)
+			cmd+=(-type d);;
+		file)
+			cmd+=(-type f);;
+		hide)
+			cmd+=(-not -path '*/\.*');;
+		*)
+			cmd=(find "$arg" -maxdepth 1 -not -path "$arg");;
+	esac
+done
+
+cmd+=(-printf "%f\n")
+"${cmd[@]}"

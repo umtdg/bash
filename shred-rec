@@ -1,1 +1,0 @@
-find . -exec shred -zvun 300 {} \;

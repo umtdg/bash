@@ -20,3 +20,6 @@ screencast:
 test-mic:
 	alsa-utils
 
+schedule:
+	python 3.x
+

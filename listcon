@@ -1,0 +1,26 @@
+#!/bin/bash
+
+cmd=(sudo netstat -anlp)
+firstFilter=(grep -v "127.0.0.1")
+secondFilter=(grep ESTABLISHED)
+useSecondFilter=true
+
+case $1 in
+	all | "" )
+		useSecondFilter=false;;
+	lis | listening)
+		secondFilter=(grep LISTENING);;
+	tw | timewait | time_wait)
+		secondFilter=(grep TIME_WAIT);;
+	con | connected)
+		secondFilter=(grep CONNECTED);;
+	cw | closewait | close_wait)
+		secondFilter=(grep CLOSE_WAIT);;
+	*);;
+esac
+
+if [ $useSecondFilter = true ]; then
+	"${cmd[@]}" | "${firstFilter[@]}" | "${secondFilter[@]}"
+else
+	"${cmd[@]}" | "${firstFilter[@]}"
+fi

@@ -1,0 +1,10 @@
+#!/bin/bash
+
+if [[ $(netstat -an | grep 0.0.0.0:8080 | wc -c) != 0 ]]; then
+	printf "Stopping utorrent server.\n"
+	kill $(pgrep -u skywalker utserver)
+else
+	printf "Starting utorrent server.\n"
+	cd /home/skywalker/Downloads/utorrent
+	./utserver
+fi

@@ -8,7 +8,7 @@ do
 	if [ $? == 0 ]; then
 		printf "Already up to date.";
 	else
-		makepkg -si;
+		makepkg -si && git clean -fxd;
 	fi
 	cd ..;
 	printf "\n\n";

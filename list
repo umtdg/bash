@@ -18,4 +18,4 @@ do
 done
 
 cmd+=(-printf "%f\n")
-"${cmd[@]}"
+"${cmd[@]}" | grep --color=auto ".*."

@@ -5,21 +5,20 @@ aurupdate:
 
 bilkentvpn:
 	openvpn
-	bilkent.conf at openvpn client configs (\w dev enp2s0)
+	bilkent-client.conf
 	net-tools
 	iproute2
 
 pagecount:
-	exiftool
+	exiftool (from blackarch repo)
 
 screencast:
 	ffmpeg
-	xrectsel
-	alsa or pulse
+	xrectsel (from AUR)
+	pulse
 
 test-mic:
 	alsa-utils
 
 schedule:
 	python 3.x
-

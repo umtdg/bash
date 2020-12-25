@@ -1,3 +1,4 @@
 #!/bin/bash
 
-</dev/urandom tr -dc 'A-Za-z0-9!"#$%&'\''()*+,-./:;<=>?@[\]^_`{|}~' | head -c $1  ; echo
+[[ -z "$1" ]] && length="16" || length=$1
+</dev/urandom tr -dc 'A-Za-z0-9!"#$%&'\''()*+,-./:;<=>?@[\]^_`{|}~' | head -c $length  ; echo

@@ -1,9 +1,25 @@
 #!/bin/bash
 
-if [[ $(systemctl status openvpn-client@bilkent-client | grep inactive) ]]; then
+iface=$1
+if [ -z "$iface" ]; then
+	read -p "Network interface not specified. Use default (enp2s0)? [y/N] " -n 1 -r
+	echo
+
+	if [[ $REPLY =~ ^[Yy]$ ]]; then
+		iface="enp2s0"
+	else
+		exit 1
+	fi
+fi
+
+if [[ $(systemctl status openvpn-client@bilkent-client | grep -E 'inactive|failed') ]]; then
 	printf "Connecting to Bilkent-VPN\n"
 
 	sudo systemctl start openvpn-client@bilkent-client
+
+	if [ $? -ne 0 ]; then
+		exit 1
+	fi
 
 	printf "Waiting for tun0 interface\n"
 	while [[ $(ifconfig | grep tun0 | head -c1 | wc -c) -eq 0 ]]; do
@@ -15,7 +31,7 @@ if [[ $(systemctl status openvpn-client@bilkent-client | grep inactive) ]]; then
 	printf "Routing the traffic..."
 
 	sudo ip route add default dev tun0
-	sudo ip route add 192.168.1.0/24 dev enp2s0
+	sudo ip route add 192.168.1.0/24 dev $iface
 
 	printf " Done\n"
 	printf "Connected successfully\n"

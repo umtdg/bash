@@ -1,17 +1,20 @@
 #!/bin/bash
 
+output=$1
+if [ -z "${output}" ]; then
+    printf "No output file specified, using default\n"
+    output="ScreenRecord-$(date '+%Y-%m-%d_%H-%M-%S').mp4"
+fi
+
 area=$(xrectsel $'%wx%h+%x+%y')
 size=$(echo $area | cut -d'+' -f1)
 x=$(echo $area | cut -d'+' -f2)
 y=$(echo $area | cut -d'+' -f3)
 
-alsa='-f alsa -i hw:0,0'
 pulse='-f pulse -ac 2 -i default'
-
 video="ffmpeg -hide_banner -f x11grab -show_region 1 -framerate 30 -video_size $size -i $DISPLAY+$x,$y"
-sound_end="-c:v libx264 -preset ultrafast -c:a aac $2"
-cmd=''
+sound_end="-c:v libx264 -preset ultrafast -c:a aac $output"
 
-[ "$1" = "alsa" ] && cmd="$video $alsa $sound_end" || cmd="$video $pulse $sound_end"
+cmd="$video $pulse $sound_end"
 
 $cmd

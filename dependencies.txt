@@ -1,24 +1,17 @@
-archlinux:
+[AUR]
+xrectsel
 
-aurupdate:
-	git
+[blackarch]
+exiftool
 
-bilkentvpn:
-	openvpn
-	bilkent-client.conf
-	net-tools
-	iproute2
+[pacman]
+git
+openvpn
+net-tools
+iproute2
+ffmpeg
+pulse
+alsa-utils
 
-pagecount:
-	exiftool (from blackarch repo)
-
-screencast:
-	ffmpeg
-	xrectsel (from AUR)
-	pulse
-
-test-mic:
-	alsa-utils
-
-schedule:
-	python 3.x
+[non-repo]
+bilkent-client.conf

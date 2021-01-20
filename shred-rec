@@ -1,3 +1,10 @@
 #!/bin/bash
 
+if [ -z $1 ]
+then
+	printf "Directory expected\n"
+	printf "Usage: shred-rec <dir>\n"
+	exit 1
+fi
+
 find . -exec shred -zvun 300 {} \;

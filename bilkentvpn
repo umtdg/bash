@@ -2,14 +2,24 @@
 
 iface=$1
 if [ -z "$iface" ]; then
-	read -p "Network interface not specified. Use default (enp2s0)? [y/N] " -n 1 -r
+	read -p "Network interface not specified. Use default? [y/N] " -n 1 -r
 	echo
 
 	if [[ $REPLY =~ ^[Yy]$ ]]; then
-		iface="enp2s0"
+		iface=$(awk '$2 == 00000000 { print $1 }' /proc/net/route)
+		printf "Interface = ${iface}\n"
 	else
 		exit 1
 	fi
+fi
+
+client_conf="/etc/openvpn/client/bilkent-client.conf"
+if ! sudo test -f "${client_conf}"; then
+	printf "Configuration file is missing, fetching...\n"
+
+	sudo curl --output "${client_conf}" "http://web3.bilkent.edu.tr/vpn/wp-content/uploads/2019/09/bilkent-2020.ovpn"
+
+	printf "Configuration file saved to ${client_conf}\n"
 fi
 
 if [[ $(systemctl status openvpn-client@bilkent-client | grep -E 'inactive|failed') ]]; then

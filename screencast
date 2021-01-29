@@ -1,20 +1,72 @@
 #!/bin/bash
+#
+mkdir -p "$HOME/Videos"
 
-output=$1
-if [ -z "${output}" ]; then
-    printf "No output file specified, using default\n"
-    output="ScreenRecord-$(date '+%Y-%m-%d_%H-%M-%S').mp4"
-fi
+# Default output file
+output="$HOME/Videos/ScreenRecord-$(date '+%Y-%m-%d_%H-%M-%S').mp4"
+
+# Default framerate
+framerate="30"
+
+# Audio source
+audio_source="default"
+
+while [[ $# -gt 0 ]]
+do
+	key="$1"
+	case $key in
+		-o|--output)
+			if [ -n $2 ] && [ ${2:0:1} != "-" ]; then
+				output="$2"
+				shift 2
+			else
+				printf "Error: --output option needs an argument" >&2
+			fi
+			;;
+		-f|--framerate)
+			if [ -n $2 ] && [ ${2:0:1} != "-" ]; then
+				framerate="$2"
+				shift 2
+			else
+				printf "Error: --framerate option needs an argument" >&2
+			fi
+			;;
+		-l|--list-audio)
+			pacmd list-sources | grep --color=auto "device.description\|index"
+			exit 0
+			;;
+		-a|--audio-source)
+			if [ -n $2 ] && [ ${2:0:1} != "-" ] ; then
+				audio_source="$2"
+				shift 2
+			else
+				printf "Error: --audio-source option needs an argument" >&2
+			fi
+			;;
+		-h|--help)
+			printf "Usage:\n\tscreencast [OPTIONS ...]\n\n"
+			printf "OPTIONS:\n"
+			printf "\t-o|--output       <output_file>      Output file name\n"
+			printf "\t-f|--framerate    <framerate>        Framerate of the video and auido\n"
+			printf "\t-a|--audio-source <source>           Audio source to use. Use -l option first and\n"
+			printf "\t                                     pass the index to this parameter\n"
+			printf "\t-l|--list-audio                      List audio sources and exit\n"
+			printf "\t-h|--help                            Print this page and exit\n"
+			exit 0
+	esac
+done
 
 area=$(xrectsel $'%wx%h+%x+%y')
 size=$(echo $area | cut -d'+' -f1)
 x=$(echo $area | cut -d'+' -f2)
 y=$(echo $area | cut -d'+' -f3)
 
-pulse='-f pulse -ac 2 -i default'
-video="ffmpeg -hide_banner -f x11grab -show_region 1 -framerate 30 -video_size $size -i $DISPLAY+$x,$y"
-sound_end="-c:v libx264 -preset ultrafast -c:a aac $output"
+video="ffmpeg -hide_banner -f x11grab -show_region 1 -framerate $framerate -video_size $size -i $DISPLAY+$x+$y"
+pulse="-f pulse -ac 2 -i $audio_source -c:v libx264 -preset ultrafast -c:a aac $output"
 
-cmd="$video $pulse $sound_end"
+cmd="$video $pulse"
 
 $cmd
+
+printf "Output: ${output}\n"
+

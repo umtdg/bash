@@ -11,6 +11,9 @@ framerate="30"
 # Audio source
 audio_source="default"
 
+# Disable audio
+no_audio=false
+
 while [[ $# -gt 0 ]]
 do
 	key="$1"
@@ -21,6 +24,7 @@ do
 				shift 2
 			else
 				printf "Error: --output option needs an argument" >&2
+				exit 1
 			fi
 			;;
 		-f|--framerate)
@@ -29,6 +33,7 @@ do
 				shift 2
 			else
 				printf "Error: --framerate option needs an argument" >&2
+				exit 1
 			fi
 			;;
 		-l|--list-audio)
@@ -41,7 +46,12 @@ do
 				shift 2
 			else
 				printf "Error: --audio-source option needs an argument" >&2
+				exit 1
 			fi
+			;;
+		--no-audio)
+			no_audio=true
+			shift 1
 			;;
 		-h|--help)
 			printf "Usage:\n\tscreencast [OPTIONS ...]\n\n"
@@ -50,6 +60,7 @@ do
 			printf "\t-f|--framerate    <framerate>        Framerate of the video and auido\n"
 			printf "\t-a|--audio-source <source>           Audio source to use. Use -l option first and\n"
 			printf "\t                                     pass the index to this parameter\n"
+			printf "\t--no-audio                           Disable recording audio. When set, --audio-source is ignored\n"
 			printf "\t-l|--list-audio                      List audio sources and exit\n"
 			printf "\t-h|--help                            Print this page and exit\n"
 			exit 0
@@ -61,8 +72,13 @@ size=$(echo $area | cut -d'+' -f1)
 x=$(echo $area | cut -d'+' -f2)
 y=$(echo $area | cut -d'+' -f3)
 
-video="ffmpeg -hide_banner -f x11grab -show_region 1 -framerate $framerate -video_size $size -i $DISPLAY+$x+$y"
-pulse="-f pulse -ac 2 -i $audio_source -c:v libx264 -preset ultrafast -c:a aac $output"
+video="ffmpeg -hide_banner -f x11grab -show_region 1 -framerate $framerate -video_size $size -i $DISPLAY+$x,$y"
+
+if no_audio ; then
+	pulse="-c:v libx264 -preset ultrafast -c:a aac $output"
+else
+	pulse="-f pulse -ac 2 -i $audio_source -c:v libx264 -preset ultrafast -c:a aac $output"
+fi
 
 cmd="$video $pulse"
 

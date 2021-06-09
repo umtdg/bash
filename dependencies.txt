@@ -10,8 +10,8 @@ openvpn
 net-tools
 iproute2
 ffmpeg
-pulse
 alsa-utils
+curl
 
 [non-repo]
 bilkent-client.conf
